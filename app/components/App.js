@@ -1,39 +1,40 @@
-import _ from 'lodash';
 import React, { Component } from 'react';
+import debounce from 'lodash/debounce';
 import YTSearch from 'youtube-api-search';
-
 
 import SearchBar from './SearchBar';
 import VideoList from './VideoList';
 import VideoDetail from './VideoDetail';
 
-const API_KEY = 'AIzaSyBY_5bcJ7B8PpN2293nBuz2VIHIWEyq8Wc';
+const API_KEY = 'ENTER YOUR API KEY HERE!';
 
-class App extends Component {
+export default class App extends Component {
+  state = { videos: [], selectedVideo: null };
 
-    constructor(props) {
-        super(props);
-        this.state = { videos: [], selectedVideo : null };
-    
-        this.videoSearch('batman');
-    }
+  componentDidMount() {
+    this.videoSearch('batman');
+  }
 
-    videoSearch(term) {
-         YTSearch({key: API_KEY, term: term}, (videos) => {
-            this.setState({ videos: videos, selectedVideo: videos[0] })  
-        });
-    }
-    
-    render() {
-        const videoSearch = _.debounce(( term ) => { this.videoSearch(term) }, 300)
-        return (
-            <div>
-                <SearchBar onSearchTermChange = {videoSearch} />
-                <VideoDetail video = {this.state.selectedVideo} />
-                <VideoList onVideoSelect = { (selectedVideo) => this.setState({ selectedVideo })} videos = {this.state.videos} />
-            </div> 
-        );
-    }
+  videoSearch = term => {
+    YTSearch({ key: API_KEY, term: term }, videos => {
+      this.setState({ videos, selectedVideo: videos[0] });
+    });
+  };
+
+  handleVideoState = selectedVideo => this.setState({ selectedVideo });
+
+  render() {
+    const { selectedVideo, videos } = this.state;
+    const videoSearch = debounce(term => {
+      this.videoSearch(term);
+    }, 300);
+
+    return (
+      <div>
+        <SearchBar onSearchTermChange={videoSearch} />
+        <VideoDetail video={selectedVideo} />
+        <VideoList onVideoSelect={this.handleVideoState(selectedVideo)} videos={videos} />
+      </div>
+    );
+  }
 }
-
-export default App;
