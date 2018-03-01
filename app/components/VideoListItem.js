@@ -1,6 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-const VideoListItem = ({ video, onVideoSelect }) => {
+VideoListItem.PropTypes = {
+  video: PropTypes.object.isRequired,
+  onVideoSelect: PropTypes.func.isRequired,
+}
+
+export default function VideoListItem({ video, onVideoSelect }) {
   const imageURL = video.snippet.thumbnails.default.url;
   const videoTitle = video.snippet.title;
 
@@ -19,4 +25,5 @@ const VideoListItem = ({ video, onVideoSelect }) => {
   );
 };
 
-export default VideoListItem;
+
+
